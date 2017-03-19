@@ -1,0 +1,7 @@
+2	1
+9	1
+21	kevés a csoki és nem volt elég pénz!
+46	1
+47	kevés a csoki és nem volt elég pénz!
+55	kevés a csoki és nem volt elég pénz!
+

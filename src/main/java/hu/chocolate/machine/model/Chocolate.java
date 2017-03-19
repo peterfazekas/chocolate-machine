@@ -6,7 +6,7 @@ package hu.chocolate.machine.model;
 public class Chocolate {
 
     private final int compartment;
-    private final int count;
+    private int count;
     private final int price;
 
     public Chocolate(int compartment, int count) {
@@ -25,6 +25,10 @@ public class Chocolate {
 
     public int getCount() {
         return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 
     public int getPrice() {

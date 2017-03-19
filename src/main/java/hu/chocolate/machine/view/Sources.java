@@ -5,7 +5,8 @@ package hu.chocolate.machine.view;
  */
 public enum Sources {
     CHOCOLATE("csoki.txt"),
-    PURCHASE("vasarlas.txt");
+    PURCHASE("vasarlas.txt"),
+    OUTPUT("rekesz7.txt");
 
     private final String source;
 

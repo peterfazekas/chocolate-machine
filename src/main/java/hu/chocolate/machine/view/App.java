@@ -1,5 +1,7 @@
 package hu.chocolate.machine.view;
 
+import hu.chocolate.machine.data.log.DataLogger;
+import hu.chocolate.machine.data.log.FileDataLogger;
 import hu.chocolate.machine.data.parse.DataParser;
 import hu.chocolate.machine.data.read.DataReader;
 import hu.chocolate.machine.data.read.FileDataReader;
@@ -15,8 +17,11 @@ import java.util.List;
  */
 public class App {
 
+    private static final int COMPARTMENT_NUMBER = 7;
+
     private final Console console;
     private final DataReader file;
+    private final DataLogger log;
     private final DataParser data;
     private final ChocolateMachine machine;
 
@@ -29,6 +34,7 @@ public class App {
         console = new Console();
         file = new FileDataReader();
         data = new DataParser();
+        log = FileDataLogger.createInstance(Sources.OUTPUT.getSource());
         List<Chocolate> chocolates = data.parse(file.read(Sources.CHOCOLATE.getSource()));
         List<Purchase> purchases = data.parse(file.read(Sources.PURCHASE.getSource()));
         machine = new ChocolateMachine(chocolates, purchases);
@@ -43,5 +49,6 @@ public class App {
         System.out.print("5. feladat: Adjon meg egy rekesz sorszámot és a darabszámot [x y]: ");
         Chocolate chocolate = data.createChocolate(console.read());
         System.out.println(machine.getPunctualAmountOfChanges(chocolate));
+        log.println(machine.compartmentSeven(COMPARTMENT_NUMBER));
     }
 }
