@@ -74,6 +74,7 @@ public class ChocolateMachine {
     private List<Integer> getAvailableCompartmentList(final int value) {
         return chocolates.stream()
                 .filter(i -> i.getPrice() * NUMBER_OF_FRIENDS <= value)
+                .filter(i -> i.getCount() >= 7)
                 .map(i -> i.getCompartment())
                 .collect(Collectors.toList());
     }
