@@ -11,7 +11,6 @@ import hu.chocolate.machine.service.Console;
 class App {
 
     private static final String OUTPUT = "rekesz7.txt";
-    private static final int COMPARTMENT_NUMBER = 7;
 
     private final Console console;
     private final DataLogger log;
@@ -36,6 +35,6 @@ class App {
                 + machine.getAvailableCompartments(console.readInt()));
         System.out.print("5. feladat: Adjon meg egy rekesz sorszámot és a darabszámot [x y]: ");
         System.out.println(machine.getPunctualAmountOfChanges(console.read()));
-        log.println(machine.compartmentSeven(COMPARTMENT_NUMBER));
+        log.println(machine.compartmentSeven());
     }
 }

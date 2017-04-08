@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class ChocolateMachine {
 
     private static final int NUMBER_OF_FRIENDS = 7;
+    private static final int COMPARTMENT_NUMBER = 7;
     private static final String NEW_LINE = "\r\n";
     private static final String TAB = "\t";
     private static final String SEPARATOR = " ";
@@ -144,11 +145,11 @@ public class ChocolateMachine {
      * akkor a „nem volt elég pénz” szöveget írja a fájlba! Amennyiben a vásárlás több okból is meghiúsulhat,
      * elegendő csak az egyik okot megjeleníteni.
      */
-    public String compartmentSeven(final int compartment) {
-        Chocolate chocolate = getChocolate(compartment);
+    public String compartmentSeven() {
+        Chocolate chocolate = getChocolate(COMPARTMENT_NUMBER);
         StringBuilder sb = new StringBuilder();
         purchases.stream()
-                .filter(purchase -> purchase.getCompartment() == compartment)
+                .filter(purchase -> purchase.getCompartment() == COMPARTMENT_NUMBER)
                 .forEach(purchase -> {
                     sb.append(purchase.getId()).append(TAB);
                     if (isFewChocolate(chocolate, purchase) && isLittleMoney(chocolate, purchase)) {
