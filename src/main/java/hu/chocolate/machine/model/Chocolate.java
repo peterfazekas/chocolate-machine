@@ -6,8 +6,8 @@ package hu.chocolate.machine.model;
 public class Chocolate {
 
     private final int compartment;
-    private int count;
     private final int price;
+    private int count;
 
     public Chocolate(int compartment, int count) {
         this(compartment, count, 0);

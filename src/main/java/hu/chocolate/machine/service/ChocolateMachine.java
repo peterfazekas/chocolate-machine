@@ -1,5 +1,7 @@
 package hu.chocolate.machine.service;
 
+import hu.chocolate.machine.data.api.Source;
+import hu.chocolate.machine.data.parse.ChocolateParser;
 import hu.chocolate.machine.model.Change;
 import hu.chocolate.machine.model.Chocolate;
 import hu.chocolate.machine.model.Purchase;
@@ -11,15 +13,15 @@ import java.util.stream.Collectors;
  * @author Peter_Fazekas on 2017.03.19..
  */
 public class ChocolateMachine {
-    public static final int NUMBER_OF_FRIENDS = 7;
-    public static final String NEW_LINE = "\r\n";
-    public static final String TAB = "\t";
+    private static final int NUMBER_OF_FRIENDS = 7;
+    private static final String NEW_LINE = "\r\n";
+    private static final String TAB = "\t";
     private final List<Chocolate> chocolates;
     private final List<Purchase> purchases;
 
-    public ChocolateMachine(List<Chocolate> chocolates, List<Purchase> purchases) {
-        this.chocolates = chocolates;
-        this.purchases = purchases;
+    public ChocolateMachine() {
+        chocolates = Source.getData(Source.CHOCOLATE_MACHINE);
+        purchases = Source.getData(Source.PURCHASE);
     }
 
     /**
@@ -50,7 +52,7 @@ public class ChocolateMachine {
 
     private Set<Integer> getCompartmentSet() {
         return purchases.stream()
-                .map(i -> i.getCompartment())
+                .map(Purchase::getCompartment)
                 .collect(Collectors.toSet());
     }
 
@@ -75,7 +77,7 @@ public class ChocolateMachine {
         return chocolates.stream()
                 .filter(i -> i.getPrice() * NUMBER_OF_FRIENDS <= value)
                 .filter(i -> i.getCount() >= 7)
-                .map(i -> i.getCompartment())
+                .map(Chocolate::getCompartment)
                 .collect(Collectors.toList());
     }
 
@@ -87,10 +89,12 @@ public class ChocolateMachine {
      * Egy sorba egy címlet kerüljön; először a címlet értéke, majd mögötte a darabszám jelenjen meg!
      * Nem kell vizsgálnia, hogy van-e elég csokoládé a rekeszben!
      *
-     * @param find - {@link Chocolate} - rekesz sorszáma és darabszám
+     * @param input - {@link Chocolate} - rekesz sorszáma és darabszám
      * @return String - a megfelelő válasz.
      */
-    public String getPunctualAmountOfChanges(Chocolate find) {
+    public String getPunctualAmountOfChanges(String input) {
+        ChocolateParser data = new ChocolateParser();
+        Chocolate find = data.createChocolate(input);
         final Chocolate chocolate = getChocolate(find.getCompartment());
         int total = chocolate.getPrice() * find.getCount();
         return getChanges(total);
@@ -100,7 +104,7 @@ public class ChocolateMachine {
         return chocolates.stream()
                 .filter(i -> i.getCompartment() == compartment)
                 .findFirst()
-                .get();
+                .orElse(null);
     }
 
     private String getChanges(final int value) {
@@ -111,7 +115,7 @@ public class ChocolateMachine {
             int div = total / change;
             total -= div * change;
             if (div > 0) {
-                sb.append(NEW_LINE + "   " + change + ": " + div);
+                sb.append(NEW_LINE + "   ").append(change).append(": ").append(div);
             }
         }
         return sb.toString();
@@ -120,7 +124,7 @@ public class ChocolateMachine {
     private List<Integer> createBankNoteList() {
         List<Integer> changes = new ArrayList<>();
         Arrays.stream(Change.values())
-                .mapToInt(i -> i.getValue())
+                .mapToInt(Change::getValue)
                 .forEach(changes::add);
         changes.sort(Comparator.reverseOrder());
         return changes;
@@ -142,7 +146,7 @@ public class ChocolateMachine {
         purchases.stream()
                 .filter(i -> i.getCompartment() == compartment)
                 .forEach(i -> {
-                    sb.append(i.getId() + TAB);
+                    sb.append(i.getId()).append(TAB);
                     if (chocolate.getCount() < i.getCount() && chocolate.getPrice() * i.getCount() > i.getPrice()) {
                         sb.append("kevés a csoki és nem volt elég pénz!" + NEW_LINE);
                     } else if (chocolate.getCount() < i.getCount()) {
@@ -151,7 +155,7 @@ public class ChocolateMachine {
                         sb.append("nem volt elég pénz!" + NEW_LINE);
                     } else {
                         chocolate.setCount(chocolate.getCount() - i.getCount());
-                        sb.append(i.getCount() + NEW_LINE);
+                        sb.append(i.getCount()).append(NEW_LINE);
                     }
                 });
         return sb.toString();

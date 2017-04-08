@@ -18,13 +18,12 @@ public class FileDataReader implements DataReader {
     @Override
     public List<String> read(String source) {
         List<String> lines = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(PATH + source))){
+        try (BufferedReader reader = new BufferedReader(new FileReader(PATH + source))) {
             lines = reader.lines().collect(Collectors.toList());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        lines.remove(0);
         return lines;
     }
 }
