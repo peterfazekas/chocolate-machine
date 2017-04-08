@@ -40,8 +40,4 @@ public class Purchase {
         return price;
     }
 
-    public List<Integer> getChanges() {
-        return changes;
-    }
-
 }

@@ -8,17 +8,18 @@ import hu.chocolate.machine.service.Console;
 /**
  * @author Peter_Fazekas on 2017.03.19..
  */
-public class App {
+class App {
 
+    private static final String OUTPUT = "rekesz7.txt";
     private static final int COMPARTMENT_NUMBER = 7;
 
     private final Console console;
     private final DataLogger log;
     private final ChocolateMachine machine;
 
-    public App() {
+    private App() {
         console = new Console();
-        log = FileDataLogger.createInstance(Sources.OUTPUT.getSource());
+        log = FileDataLogger.createInstance(OUTPUT);
         machine = new ChocolateMachine();
     }
 

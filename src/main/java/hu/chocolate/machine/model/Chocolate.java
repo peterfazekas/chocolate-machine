@@ -9,10 +9,6 @@ public class Chocolate {
     private final int price;
     private int count;
 
-    public Chocolate(int compartment, int count) {
-        this(compartment, count, 0);
-    }
-
     public Chocolate(int compartment, int count, int price) {
         this.compartment = compartment;
         this.count = count;
@@ -33,5 +29,9 @@ public class Chocolate {
 
     public int getPrice() {
         return price;
+    }
+
+    public int totalPrice() {
+        return count * price;
     }
 }

@@ -10,12 +10,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * Business Logic.
  * @author Peter_Fazekas on 2017.03.19..
  */
 public class ChocolateMachine {
+
     private static final int NUMBER_OF_FRIENDS = 7;
     private static final String NEW_LINE = "\r\n";
     private static final String TAB = "\t";
+    private static final String SEPARATOR = " ";
+
     private final List<Chocolate> chocolates;
     private final List<Purchase> purchases;
 
@@ -31,7 +35,7 @@ public class ChocolateMachine {
      */
     public int getTotalValue() {
         return chocolates.stream()
-                .mapToInt(i -> i.getCount() * i.getPrice())
+                .mapToInt(Chocolate::totalPrice)
                 .sum();
     }
 
@@ -43,11 +47,7 @@ public class ChocolateMachine {
      * @return String - a megfelelő válasz.
      */
     public String getCompartments() {
-        StringBuilder sb = new StringBuilder();
-        getCompartmentSet().stream()
-                .map(i -> i + " ")
-                .forEach(sb::append);
-        return sb.toString();
+        return printCollection(getCompartmentSet());
     }
 
     private Set<Integer> getCompartmentSet() {
@@ -65,20 +65,23 @@ public class ChocolateMachine {
      * @return String - a megfelelő válasz.
      */
     public String getAvailableCompartments(final int value) {
-        StringBuilder sb = new StringBuilder();
-        getAvailableCompartmentList(value).stream()
-                .map(i -> i + " ")
-                .forEach(sb::append);
-        return sb.toString();
-
+        return printCollection(getAvailableCompartmentList(value));
     }
 
     private List<Integer> getAvailableCompartmentList(final int value) {
         return chocolates.stream()
                 .filter(i -> i.getPrice() * NUMBER_OF_FRIENDS <= value)
-                .filter(i -> i.getCount() >= 7)
+                .filter(i -> i.getCount() >= NUMBER_OF_FRIENDS)
                 .map(Chocolate::getCompartment)
                 .collect(Collectors.toList());
+    }
+
+    private String printCollection(final Collection<Integer> collection) {
+        StringBuilder sb = new StringBuilder();
+        collection.stream()
+                .map(i -> i + SEPARATOR)
+                .forEach(sb::append);
+        return sb.toString();
     }
 
     /**
@@ -92,7 +95,7 @@ public class ChocolateMachine {
      * @param input - {@link Chocolate} - rekesz sorszáma és darabszám
      * @return String - a megfelelő válasz.
      */
-    public String getPunctualAmountOfChanges(String input) {
+    public String getPunctualAmountOfChanges(final String input) {
         ChocolateParser data = new ChocolateParser();
         Chocolate find = data.createChocolate(input);
         final Chocolate chocolate = getChocolate(find.getCompartment());
@@ -100,9 +103,10 @@ public class ChocolateMachine {
         return getChanges(total);
     }
 
-    private Chocolate getChocolate(int compartment) {
+    private Chocolate getChocolate(final int compartment) {
         return chocolates.stream()
                 .filter(i -> i.getCompartment() == compartment)
+                .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null);
     }
@@ -144,20 +148,29 @@ public class ChocolateMachine {
         Chocolate chocolate = getChocolate(compartment);
         StringBuilder sb = new StringBuilder();
         purchases.stream()
-                .filter(i -> i.getCompartment() == compartment)
-                .forEach(i -> {
-                    sb.append(i.getId()).append(TAB);
-                    if (chocolate.getCount() < i.getCount() && chocolate.getPrice() * i.getCount() > i.getPrice()) {
-                        sb.append("kevés a csoki és nem volt elég pénz!" + NEW_LINE);
-                    } else if (chocolate.getCount() < i.getCount()) {
-                        sb.append("kevés a csoki!" + NEW_LINE);
-                    } else if (chocolate.getPrice() * i.getCount() > i.getPrice()) {
-                        sb.append("nem volt elég pénz!" + NEW_LINE);
+                .filter(purchase -> purchase.getCompartment() == compartment)
+                .forEach(purchase -> {
+                    sb.append(purchase.getId()).append(TAB);
+                    if (isFewChocolate(chocolate, purchase) && isLittleMoney(chocolate, purchase)) {
+                        sb.append("kevés a csoki és nem volt elég pénz!");
+                    } else if (isFewChocolate(chocolate, purchase)) {
+                        sb.append("kevés a csoki!");
+                    } else if (isLittleMoney(chocolate, purchase)) {
+                        sb.append("nem volt elég pénz!");
                     } else {
-                        chocolate.setCount(chocolate.getCount() - i.getCount());
-                        sb.append(i.getCount()).append(NEW_LINE);
+                        chocolate.setCount(chocolate.getCount() - purchase.getCount());
+                        sb.append(purchase.getCount());
                     }
+                    sb.append(NEW_LINE);
                 });
         return sb.toString();
+    }
+
+    private boolean isFewChocolate(final Chocolate chocolate, final Purchase purchase) {
+        return chocolate.getCount() < purchase.getCount();
+    }
+
+    private boolean isLittleMoney(final Chocolate chocolate, final Purchase purchase) {
+        return chocolate.getPrice() * purchase.getCount() > purchase.getPrice();
     }
 }
